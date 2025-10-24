@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claim-detection-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: claim-detection
+  template:
+    metadata:
+      labels:
+        app: claim-detection
+    spec:
+      containers:
+      - name: claim-detection
+        image: claim-detection-service:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claim-detection-service
+spec:
+  selector:
+    app: claim-detection
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
